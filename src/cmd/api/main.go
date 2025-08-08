@@ -26,13 +26,15 @@ func main() {
 	createUser := application.NewCreateUser(userRepo, hasher)
 	findAllUsers := application.NewFindAllUsers(userRepo)
 	findUserById := application.NewFindUserById(userRepo)
-	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById)
+	findUserByEmail := application.NewFindUserByEmail(userRepo)
+	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById, *findUserByEmail)
 
 	// Router
 	router := gin.Default()
 	router.POST("/users", userHandler.CreateUser)
 	router.GET("/users", userHandler.FindAllUsers)
 	router.GET("/users/:id", userHandler.FindUserById)
+	router.GET("/users/email/:email", userHandler.FindUserByEmail)
 
 	router.Run()
 }

@@ -8,16 +8,23 @@ import (
 )
 
 type UserHandler struct {
-	createUser   application.CreateUserCommand
-	findAllUsers application.FindAllUsersCommand
-	findUserById application.FindUserByIdCommand
+	createUser      application.CreateUserCommand
+	findAllUsers    application.FindAllUsersCommand
+	findUserById    application.FindUserByIdCommand
+	findUserByEmail application.FindUserByEmailCommand
 }
 
-func NewUserHandler(createUser application.CreateUserCommand, findAllUsers application.FindAllUsersCommand, findUserByID application.FindUserByIdCommand) *UserHandler {
+func NewUserHandler(
+	createUser application.CreateUserCommand,
+	findAllUsers application.FindAllUsersCommand,
+	findUserByID application.FindUserByIdCommand,
+	findUserByEmail application.FindUserByEmailCommand,
+) *UserHandler {
 	return &UserHandler{
-		createUser:   createUser,
-		findAllUsers: findAllUsers,
-		findUserById: findUserByID,
+		createUser:      createUser,
+		findAllUsers:    findAllUsers,
+		findUserById:    findUserByID,
+		findUserByEmail: findUserByEmail,
 	}
 }
 
@@ -54,6 +61,23 @@ func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
 func (h *UserHandler) FindUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	user, err := h.findUserById.Execute(ctx, id)
+
+	if err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) FindUserByEmail(ctx *gin.Context) {
+	email := ctx.Param("email")
+
+	user, err := h.findUserByEmail.Execute(ctx, email)
 
 	if err != nil {
 		if err.Error() == "record not found" {
