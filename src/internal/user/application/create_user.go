@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"errors"
 	"rapi-pedidos/src/internal/user/domain"
 )
@@ -17,12 +18,12 @@ func NewCreateUser(repo domain.Repository, hasher domain.PasswordHasher) *Create
 	}
 }
 
-func (cuc *CreateUserCommand) Execute(name, email, password string) (*domain.User, error) {
+func (cuc *CreateUserCommand) Execute(ctx context.Context, name, email, password string) (*domain.User, error) {
 	if email == "" {
 		return nil, errors.New("email es requerido")
 	}
 
-	exists, _ := cuc.userRepo.FindByEmail(email)
+	exists, _ := cuc.userRepo.FindByEmail(ctx, email)
 	if exists != nil {
 		return nil, errors.New("email ya registrado")
 	}
@@ -38,7 +39,7 @@ func (cuc *CreateUserCommand) Execute(name, email, password string) (*domain.Use
 		return nil, err
 	}
 
-	err = cuc.userRepo.Save(user)
+	err = cuc.userRepo.Save(ctx, user)
 	if err != nil {
 		return nil, err
 	}

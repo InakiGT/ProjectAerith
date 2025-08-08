@@ -19,16 +19,18 @@ func main() {
 	}
 
 	// Connection to the database
-	dbConn := db.NewPostgresConnection()
+	dbConn := db.NewGormConnection()
 
-	userRepo := persistence.NewPgRepository(dbConn)
+	userRepo := persistence.NewGormRepository(dbConn)
 	hasher := hashing.NewBcryptHasher()
 	createUser := application.NewCreateUser(userRepo, hasher)
-	userHandler := http.NewUserHandler(*createUser)
+	findAllUsers := application.NewFindAllUsers(userRepo)
+	userHandler := http.NewUserHandler(*createUser, *findAllUsers)
 
 	// Router
 	router := gin.Default()
 	router.POST("/users", userHandler.CreateUser)
+	router.GET("/users", userHandler.FindAllUsers)
 
 	router.Run()
 }

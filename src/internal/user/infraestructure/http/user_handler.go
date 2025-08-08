@@ -8,12 +8,14 @@ import (
 )
 
 type UserHandler struct {
-	createUser application.CreateUserCommand
+	createUser   application.CreateUserCommand
+	findAllUsers application.FindAllUsersCommand
 }
 
-func NewUserHandler(createUser application.CreateUserCommand) *UserHandler {
+func NewUserHandler(createUser application.CreateUserCommand, findAllUsers application.FindAllUsersCommand) *UserHandler {
 	return &UserHandler{
-		createUser: createUser,
+		createUser:   createUser,
+		findAllUsers: findAllUsers,
 	}
 }
 
@@ -29,10 +31,20 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := h.createUser.Execute(input.Username, input.Email, input.Password); err != nil {
+	if _, err := h.createUser.Execute(ctx, input.Username, input.Email, input.Password); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"status": "user created"})
+}
+
+func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
+	users, err := h.findAllUsers.Execute(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, users)
 }
