@@ -25,12 +25,14 @@ func main() {
 	hasher := hashing.NewBcryptHasher()
 	createUser := application.NewCreateUser(userRepo, hasher)
 	findAllUsers := application.NewFindAllUsers(userRepo)
-	userHandler := http.NewUserHandler(*createUser, *findAllUsers)
+	findUserById := application.NewFindUserById(userRepo)
+	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById)
 
 	// Router
 	router := gin.Default()
 	router.POST("/users", userHandler.CreateUser)
 	router.GET("/users", userHandler.FindAllUsers)
+	router.GET("/users/:id", userHandler.FindUserById)
 
 	router.Run()
 }

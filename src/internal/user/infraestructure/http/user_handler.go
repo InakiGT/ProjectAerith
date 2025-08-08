@@ -10,12 +10,14 @@ import (
 type UserHandler struct {
 	createUser   application.CreateUserCommand
 	findAllUsers application.FindAllUsersCommand
+	findUserById application.FindUserByIdCommand
 }
 
-func NewUserHandler(createUser application.CreateUserCommand, findAllUsers application.FindAllUsersCommand) *UserHandler {
+func NewUserHandler(createUser application.CreateUserCommand, findAllUsers application.FindAllUsersCommand, findUserByID application.FindUserByIdCommand) *UserHandler {
 	return &UserHandler{
 		createUser:   createUser,
 		findAllUsers: findAllUsers,
+		findUserById: findUserByID,
 	}
 }
 
@@ -47,4 +49,20 @@ func (h *UserHandler) FindAllUsers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, users)
+}
+
+func (h *UserHandler) FindUserById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	user, err := h.findUserById.Execute(ctx, id)
+
+	if err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
 }

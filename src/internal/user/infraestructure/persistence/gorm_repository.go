@@ -44,7 +44,18 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
 }
 
 func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.User, error) {
-	return nil, nil
+	var user *User
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var result *domain.User
+	result = &user.User
+	result.Id = user.Id
+
+	return result, nil
 }
 
 func (r *GormRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
