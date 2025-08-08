@@ -7,11 +7,13 @@ import (
 
 type CreateUserCommand struct {
 	userRepo domain.Repository
+	hasher   domain.PasswordHasher
 }
 
-func NewCreateUser(repo domain.Repository) *CreateUserCommand {
+func NewCreateUser(repo domain.Repository, hasher domain.PasswordHasher) *CreateUserCommand {
 	return &CreateUserCommand{
 		userRepo: repo,
+		hasher:   hasher,
 	}
 }
 
@@ -25,7 +27,13 @@ func (cuc *CreateUserCommand) Execute(name, email, password string) (*domain.Use
 		return nil, errors.New("email ya registrado")
 	}
 
-	user, err := domain.NewUser(name, email, password)
+	passwordHased, err := cuc.hasher.Hash(password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := domain.NewUser(name, email, passwordHased)
 	if err != nil {
 		return nil, err
 	}

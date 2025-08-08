@@ -4,6 +4,7 @@ import (
 	"log"
 	"rapi-pedidos/src/internal/shared/infrastructure/db"
 	"rapi-pedidos/src/internal/user/application"
+	"rapi-pedidos/src/internal/user/infraestructure/hashing"
 	"rapi-pedidos/src/internal/user/infraestructure/http"
 	"rapi-pedidos/src/internal/user/infraestructure/persistence"
 
@@ -21,7 +22,8 @@ func main() {
 	dbConn := db.NewPostgresConnection()
 
 	userRepo := persistence.NewPgRepository(dbConn)
-	createUser := application.NewCreateUser(userRepo)
+	hasher := hashing.NewBcryptHasher()
+	createUser := application.NewCreateUser(userRepo, hasher)
 	userHandler := http.NewUserHandler(*createUser)
 
 	// Router
