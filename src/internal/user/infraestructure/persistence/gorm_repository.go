@@ -72,3 +72,15 @@ func (r *GormRepository) FindByEmail(ctx context.Context, email string) (*domain
 
 	return result, nil
 }
+
+func (r *GormRepository) Update(ctx context.Context, user *domain.User) error {
+	var userToUpdate User
+
+	err := r.db.WithContext(ctx).Where("id = ?", user.Id).First(&userToUpdate).Error
+	if err != nil {
+		return err
+	}
+
+	userToUpdate.User = *user
+	return r.db.WithContext(ctx).Save(&userToUpdate).Error
+}

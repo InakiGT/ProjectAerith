@@ -31,3 +31,19 @@ func NewUser(name, email, password string) (*User, error) {
 		UpdatedAt: time.Now(),
 	}, nil
 }
+
+func (u *User) Update(name, email, password string) error {
+	if name != "" {
+		u.Name = name
+	}
+	if email != "" {
+		u.Email = email
+	}
+	if password != "" {
+		u.Password = password
+	}
+
+	u.UpdatedAt = time.Now()
+
+	return nil
+}

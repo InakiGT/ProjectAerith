@@ -12,6 +12,7 @@ type UserHandler struct {
 	findAllUsers    application.FindAllUsersCommand
 	findUserById    application.FindUserByIdCommand
 	findUserByEmail application.FindUserByEmailCommand
+	updateUser      application.UpdateUserCommand
 }
 
 func NewUserHandler(
@@ -19,12 +20,14 @@ func NewUserHandler(
 	findAllUsers application.FindAllUsersCommand,
 	findUserByID application.FindUserByIdCommand,
 	findUserByEmail application.FindUserByEmailCommand,
+	updateUser application.UpdateUserCommand,
 ) *UserHandler {
 	return &UserHandler{
 		createUser:      createUser,
 		findAllUsers:    findAllUsers,
 		findUserById:    findUserByID,
 		findUserByEmail: findUserByEmail,
+		updateUser:      updateUser,
 	}
 }
 
@@ -89,4 +92,26 @@ func (h *UserHandler) FindUserByEmail(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, user)
+}
+
+func (h *UserHandler) UpdateUser(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var input struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := h.updateUser.Execute(ctx, id, input.Username, input.Email, input.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
 }
