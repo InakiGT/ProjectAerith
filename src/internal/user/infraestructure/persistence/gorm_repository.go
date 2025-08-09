@@ -84,3 +84,7 @@ func (r *GormRepository) Update(ctx context.Context, user *domain.User) error {
 	userToUpdate.User = *user
 	return r.db.WithContext(ctx).Save(&userToUpdate).Error
 }
+
+func (r *GormRepository) Delete(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&User{}).Error
+}

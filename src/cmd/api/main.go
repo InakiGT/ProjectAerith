@@ -28,7 +28,8 @@ func main() {
 	findUserById := application.NewFindUserById(userRepo)
 	findUserByEmail := application.NewFindUserByEmail(userRepo)
 	updateUser := application.NewUpdateUser(userRepo, hasher)
-	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById, *findUserByEmail, *updateUser)
+	deleteUser := application.NewDeleteUser(userRepo)
+	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById, *findUserByEmail, *updateUser, *deleteUser)
 
 	// Router
 	router := gin.Default()
@@ -37,6 +38,7 @@ func main() {
 	router.GET("/users/:id", userHandler.FindUserById)
 	router.GET("/users/email/:email", userHandler.FindUserByEmail)
 	router.PUT("/users/:id", userHandler.UpdateUser)
+	router.DELETE("/users/:id", userHandler.DeleteUser)
 
 	router.Run()
 }

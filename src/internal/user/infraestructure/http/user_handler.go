@@ -13,6 +13,7 @@ type UserHandler struct {
 	findUserById    application.FindUserByIdCommand
 	findUserByEmail application.FindUserByEmailCommand
 	updateUser      application.UpdateUserCommand
+	deleteUser      application.DeleteUserCommand
 }
 
 func NewUserHandler(
@@ -21,6 +22,7 @@ func NewUserHandler(
 	findUserByID application.FindUserByIdCommand,
 	findUserByEmail application.FindUserByEmailCommand,
 	updateUser application.UpdateUserCommand,
+	deleteUser application.DeleteUserCommand,
 ) *UserHandler {
 	return &UserHandler{
 		createUser:      createUser,
@@ -28,6 +30,7 @@ func NewUserHandler(
 		findUserById:    findUserByID,
 		findUserByEmail: findUserByEmail,
 		updateUser:      updateUser,
+		deleteUser:      deleteUser,
 	}
 }
 
@@ -109,6 +112,21 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 	_, err := h.updateUser.Execute(ctx, id, input.Username, input.Email, input.Password)
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
+func (h *UserHandler) DeleteUser(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if err := h.deleteUser.Execute(ctx, id); err != nil {
+		if err.Error() == "record not found" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
