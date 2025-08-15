@@ -12,7 +12,7 @@ type GormRepository struct {
 }
 
 type User struct {
-	Id string `gorm:"primaryKey;column:id"`
+	Id uint `gorm:"primaryKey;column:id"`
 	domain.User
 }
 

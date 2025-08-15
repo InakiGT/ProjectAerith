@@ -2,11 +2,8 @@ package main
 
 import (
 	"log"
+	"rapi-pedidos/src/cmd/api/gateways"
 	"rapi-pedidos/src/internal/shared/infrastructure/db"
-	"rapi-pedidos/src/internal/user/application"
-	"rapi-pedidos/src/internal/user/infraestructure/hashing"
-	"rapi-pedidos/src/internal/user/infraestructure/http"
-	"rapi-pedidos/src/internal/user/infraestructure/persistence"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,24 +18,11 @@ func main() {
 	// Connection to the database
 	dbConn := db.NewGormConnection()
 
-	userRepo := persistence.NewGormRepository(dbConn)
-	hasher := hashing.NewBcryptHasher()
-	createUser := application.NewCreateUser(userRepo, hasher)
-	findAllUsers := application.NewFindAllUsers(userRepo)
-	findUserById := application.NewFindUserById(userRepo)
-	findUserByEmail := application.NewFindUserByEmail(userRepo)
-	updateUser := application.NewUpdateUser(userRepo, hasher)
-	deleteUser := application.NewDeleteUser(userRepo)
-	userHandler := http.NewUserHandler(*createUser, *findAllUsers, *findUserById, *findUserByEmail, *updateUser, *deleteUser)
-
 	// Router
 	router := gin.Default()
-	router.POST("/users", userHandler.CreateUser)
-	router.GET("/users", userHandler.FindAllUsers)
-	router.GET("/users/:id", userHandler.FindUserById)
-	router.GET("/users/email/:email", userHandler.FindUserByEmail)
-	router.PUT("/users/:id", userHandler.UpdateUser)
-	router.DELETE("/users/:id", userHandler.DeleteUser)
+
+	gateways.UserBindRoutes(dbConn, router)
+	gateways.AddressBindRoutes(dbConn, router)
 
 	router.Run()
 }
