@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"errors"
+
 	"rapi-pedidos/src/internal/address/domain"
 )
 
@@ -20,7 +21,7 @@ func (uac *UpadteAddressCommand) Execute(ctx context.Context, id, city, country,
 	address, _ := uac.addressRepo.FindByID(ctx, id)
 
 	if address == nil {
-		return nil, errors.New("La dirección no existe")
+		return nil, errors.New("la dirección no existe")
 	}
 
 	if city != "" {
@@ -43,7 +44,6 @@ func (uac *UpadteAddressCommand) Execute(ctx context.Context, id, city, country,
 	}
 
 	err := uac.addressRepo.Update(ctx, address)
-
 	if err != nil {
 		return nil, err
 	}

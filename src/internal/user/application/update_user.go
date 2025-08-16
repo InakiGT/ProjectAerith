@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"errors"
+
 	"rapi-pedidos/src/internal/user/domain"
 )
 
@@ -22,7 +23,7 @@ func (uuc *UpdateUserCommand) Execute(ctx context.Context, id, name, email, pass
 	user, _ := uuc.userRepo.FindByID(ctx, id)
 
 	if user == nil {
-		return nil, errors.New("El usuario no existe")
+		return nil, errors.New("el usuario no existe")
 	}
 
 	if email != "" {
