@@ -6,6 +6,7 @@ import (
 	"os"
 
 	addresspersistence "rapi-pedidos/src/internal/address/infraestructure/persistence"
+	productpersistence "rapi-pedidos/src/internal/product/infraestructure/persistence"
 	userpersistence "rapi-pedidos/src/internal/user/infraestructure/persistence"
 
 	_ "github.com/lib/pq"
@@ -34,6 +35,10 @@ func NewGormConnection() *gorm.DB {
 	}
 
 	if err := db.AutoMigrate(&addresspersistence.Address{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	if err := db.AutoMigrate(&productpersistence.Product{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"rapi-pedidos/src/cmd/api/gateways"
 	"rapi-pedidos/src/internal/shared/infrastructure/db"
 
@@ -23,6 +24,7 @@ func main() {
 
 	gateways.UserBindRoutes(dbConn, router)
 	gateways.AddressBindRoutes(dbConn, router)
+	gateways.ProductBindRoutes(dbConn, router)
 
 	router.Run()
 }

@@ -1,0 +1,18 @@
+{
+    "go.goroot": "/Users/inaki/sdk/go1.24.6",
+    "go.gopath": "/Users/inaki/go",
+    "go.toolsGopath": "/Users/inaki/go",
+    "go.alternateTools": {
+        "go": "/Users/inaki/go/bin/go1.24.6"
+    },
+    "go.useLanguageServer": true,
+    "gopls": {
+        "formatting.gofumpt": true,
+        "ui.completion.usePlaceholders": true,
+        "ui.semanticTokens": true,
+        "analyses": {
+            "unusedparams": true,
+            "shadow": true
+        }
+    }
+}

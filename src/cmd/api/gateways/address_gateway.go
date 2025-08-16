@@ -18,9 +18,9 @@ func AddressBindRoutes(dbConn *gorm.DB, router *gin.Engine) {
 	deleteAddress := application.NewDeleteAddress(addressRepo)
 	addressHandler := http.NewAddressHandler(*createAddress, *findAllAddresses, *findAddresByID, *updateAddress, *deleteAddress)
 
-	router.POST("addresses", addressHandler.CreateAddress)
-	router.GET("addresses", addressHandler.FindAllAddresses)
-	router.GET("addresses/:id", addressHandler.FindAddresByID)
-	router.PUT("addresses/:id", addressHandler.UpdateAddress)
-	router.DELETE("addresses/:id", addressHandler.DeleteAddress)
+	router.POST("/addresses", addressHandler.CreateAddress)
+	router.GET("/addresses", addressHandler.FindAllAddresses)
+	router.GET("/addresses/:id", addressHandler.FindAddresByID)
+	router.PUT("/addresses/:id", addressHandler.UpdateAddress)
+	router.DELETE("/addresses/:id", addressHandler.DeleteAddress)
 }
