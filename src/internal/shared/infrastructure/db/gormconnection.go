@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	addresspersistence "rapi-pedidos/src/internal/address/infraestructure/persistence"
-	delierypersonpersistence "rapi-pedidos/src/internal/delivery_person/infraestructure/persistence"
+	addresspersistence "rapi-pedidos/src/internal/address/infrastructure/persistence"
+	delierypersonpersistence "rapi-pedidos/src/internal/delivery_person/infrastructure/persistence"
 	productpersistence "rapi-pedidos/src/internal/product/infraestructure/persistence"
 	userpersistence "rapi-pedidos/src/internal/user/infraestructure/persistence"
 
