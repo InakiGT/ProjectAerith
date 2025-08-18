@@ -6,6 +6,7 @@ import (
 	"os"
 
 	addresspersistence "rapi-pedidos/src/internal/address/infraestructure/persistence"
+	delierypersonpersistence "rapi-pedidos/src/internal/delivery_person/infraestructure/persistence"
 	productpersistence "rapi-pedidos/src/internal/product/infraestructure/persistence"
 	userpersistence "rapi-pedidos/src/internal/user/infraestructure/persistence"
 
@@ -24,7 +25,6 @@ func NewGormConnection() *gorm.DB {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		log.Fatalf("Failed to open database connection: %v", err)
 	}
@@ -39,6 +39,10 @@ func NewGormConnection() *gorm.DB {
 	}
 
 	if err := db.AutoMigrate(&productpersistence.Product{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	if err := db.AutoMigrate(&delierypersonpersistence.DeliveryPerson{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
