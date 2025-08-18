@@ -24,27 +24,11 @@ func (uac *UpadteAddressCommand) Execute(ctx context.Context, id, city, country,
 		return nil, errors.New("la dirección no existe")
 	}
 
-	if city != "" {
-		address.City = city
-	}
-	if country != "" {
-		address.Country = country
-	}
-	if number != "" {
-		address.Number = number
-	}
-	if street != "" {
-		address.Street = street
-	}
-	if postalCode != "" {
-		address.PostalCode = postalCode
-	}
-	if cologne != "" {
-		address.Cologne = cologne
+	if err := address.Update(city, country, number, street, postalCode, cologne); err != nil {
+		return nil, err
 	}
 
-	err := uac.addressRepo.Update(ctx, address)
-	if err != nil {
+	if err := uac.addressRepo.Update(ctx, address); err != nil {
 		return nil, err
 	}
 

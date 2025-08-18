@@ -24,14 +24,8 @@ func (upc *UpdateProductCommand) Execute(ctx context.Context, id, name, descript
 		return nil, errors.New("el producto no existe")
 	}
 
-	if name != "" {
-		product.Name = name
-	}
-	if description != "" {
-		product.Description = description
-	}
-	if price != 0 {
-		product.Price = price
+	if err := product.Update(name, description, price); err != nil {
+		return nil, err
 	}
 
 	if err := upc.productRepo.Update(ctx, product); err != nil {

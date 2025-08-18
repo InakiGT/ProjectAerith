@@ -26,25 +26,20 @@ func (uuc *UpdateUserCommand) Execute(ctx context.Context, id, name, email, pass
 		return nil, errors.New("el usuario no existe")
 	}
 
-	if email != "" {
-		user.Email = email
-	}
-
-	if name != "" {
-		user.Name = name
-	}
-
+	var passwordHased string
+	var err error
 	if password != "" {
-		passwordHased, err := uuc.hasher.Hash(password)
+		passwordHased, err = uuc.hasher.Hash(password)
 		if err != nil {
 			return nil, err
 		}
-
-		user.Password = passwordHased
 	}
 
-	err := uuc.userRepo.Update(ctx, user)
-	if err != nil {
+	if err := user.Update(name, email, passwordHased); err != nil {
+		return nil, err
+	}
+
+	if err := uuc.userRepo.Update(ctx, user); err != nil {
 		return nil, err
 	}
 
