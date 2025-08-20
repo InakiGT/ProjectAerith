@@ -6,9 +6,9 @@ import (
 	"os"
 
 	addresspersistence "rapi-pedidos/src/internal/address/infrastructure/persistence"
-	delierypersonpersistence "rapi-pedidos/src/internal/delivery_person/infrastructure/persistence"
-	productpersistence "rapi-pedidos/src/internal/product/infraestructure/persistence"
-	userpersistence "rapi-pedidos/src/internal/user/infraestructure/persistence"
+	productpersistence "rapi-pedidos/src/internal/product/infrastructure/persistence"
+	userpersistence "rapi-pedidos/src/internal/user/infrastructure/persistence"
+	vehiclepersistence "rapi-pedidos/src/internal/vehicle/infrastructure/persistence"
 
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
@@ -42,7 +42,11 @@ func NewGormConnection() *gorm.DB {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
-	if err := db.AutoMigrate(&delierypersonpersistence.DeliveryPerson{}); err != nil {
+	// if err := db.AutoMigrate(&delierypersonpersistence.DeliveryPerson{}); err != nil {
+	// 	log.Fatalf("Failed to migrate database: %v", err)
+	// }
+
+	if err := db.AutoMigrate(&vehiclepersistence.Vehicle{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 

@@ -2,9 +2,9 @@ package gateways
 
 import (
 	"rapi-pedidos/src/internal/user/application"
-	"rapi-pedidos/src/internal/user/infraestructure/hashing"
-	"rapi-pedidos/src/internal/user/infraestructure/http"
-	"rapi-pedidos/src/internal/user/infraestructure/persistence"
+	"rapi-pedidos/src/internal/user/infrastructure/hashing"
+	"rapi-pedidos/src/internal/user/infrastructure/http"
+	"rapi-pedidos/src/internal/user/infrastructure/persistence"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

@@ -25,6 +25,7 @@ func main() {
 	gateways.UserBindRoutes(dbConn, router)
 	gateways.AddressBindRoutes(dbConn, router)
 	gateways.ProductBindRoutes(dbConn, router)
+	gateways.VehicleBindRoutes(dbConn, router)
 
 	router.Run()
 }
