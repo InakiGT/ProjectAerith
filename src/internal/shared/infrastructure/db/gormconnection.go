@@ -6,6 +6,7 @@ import (
 	"os"
 
 	addresspersistence "rapi-pedidos/src/internal/address/infrastructure/persistence"
+	clientcardpersistence "rapi-pedidos/src/internal/client_card/infrastructure/persistence"
 	productpersistence "rapi-pedidos/src/internal/product/infrastructure/persistence"
 	userpersistence "rapi-pedidos/src/internal/user/infrastructure/persistence"
 	vehiclepersistence "rapi-pedidos/src/internal/vehicle/infrastructure/persistence"
@@ -47,6 +48,10 @@ func NewGormConnection() *gorm.DB {
 	// }
 
 	if err := db.AutoMigrate(&vehiclepersistence.Vehicle{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	if err := db.AutoMigrate(&clientcardpersistence.ClientCard{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
