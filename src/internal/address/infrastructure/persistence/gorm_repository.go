@@ -2,7 +2,9 @@ package persistence
 
 import (
 	"context"
+
 	"rapi-pedidos/src/internal/address/domain"
+	"rapi-pedidos/src/internal/user/infrastructure/persistence"
 
 	"gorm.io/gorm"
 )
@@ -12,8 +14,15 @@ type GormRepository struct {
 }
 
 type Address struct {
-	Id uint `gorm:"primaryKey;autoIncrement;column:id"`
-	domain.Address
+	gorm.Model
+	City       string
+	Country    string
+	Number     string
+	Street     string
+	PostalCode string
+	Cologne    string
+	UserID     uint
+	User       persistence.User `gorm:"foreignKey:UserID;references:ID"`
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {
@@ -21,7 +30,8 @@ func NewGormRepository(db *gorm.DB) *GormRepository {
 }
 
 func (r *GormRepository) Save(ctx context.Context, address *domain.Address) error {
-	err := r.db.WithContext(ctx).Create(&Address{Address: *address}).Error
+	gormAddress := FromDomainTransformer(address)
+	err := r.db.WithContext(ctx).Create(gormAddress).Error
 
 	return err
 }
@@ -29,15 +39,14 @@ func (r *GormRepository) Save(ctx context.Context, address *domain.Address) erro
 func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.Address, error) {
 	var addresses []*Address
 	err := r.db.WithContext(ctx).Find(&addresses).Error
-
 	if err != nil {
 		return nil, err
 	}
 
 	var result []*domain.Address
-	for _, address := range addresses {
-		result = append(result, &address.Address)
-		result[len(result)-1].Id = address.Id
+	for _, gormAddress := range addresses {
+		address := FromPersistenceTransformer(gormAddress)
+		result = append(result, address)
 	}
 
 	return result, nil
@@ -46,14 +55,11 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.Address, error)
 func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.Address, error) {
 	var address *Address
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&address).Error
-
 	if err != nil {
 		return nil, err
 	}
 
-	var result *domain.Address
-	result = &address.Address
-	result.Id = address.Id
+	result := FromPersistenceTransformer(address)
 
 	return result, nil
 }
@@ -66,7 +72,7 @@ func (r *GormRepository) Update(ctx context.Context, address *domain.Address) er
 		return err
 	}
 
-	addressToUpdate.Address = *address
+	addressToUpdate = *FromDomainTransformer(address)
 	return r.db.WithContext(ctx).Save(&addressToUpdate).Error
 }
 

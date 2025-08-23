@@ -37,6 +37,8 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 		Name        string  `json:"name" binding:"required"`
 		Description string  `json:"description" binding:"required"`
 		Price       float32 `json:"price" binding:"required"`
+		CommerceID  uint    `json:"commerce_id" binding:"required"`
+		Image       string  `json:"image" binding:"required"`
 	}
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -44,7 +46,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := h.createProduct.Execute(ctx, input.Name, input.Description, input.Price); err != nil {
+	if _, err := h.createProduct.Execute(ctx, input.Name, input.Description, input.Image, input.Price, input.CommerceID); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

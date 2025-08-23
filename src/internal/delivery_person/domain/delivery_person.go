@@ -5,15 +5,13 @@ import "time"
 type Location struct {
 	Latitude  float64
 	Longitude float64
-	Timestamp time.Time
 }
 
 type DeliveryPerson struct {
 	Id              uint
 	UserId          uint
-	MainVehicleId   uint
 	Birthday        time.Time
-	CurrentLocation Location
+	CurrentLocation Location `gorm:"type:point"`
 	Status          string
 	PersonalID      string
 }
@@ -37,10 +35,7 @@ func NewDeliveryPerson(userid uint, birthday time.Time, personalid string) (*Del
 	}, nil
 }
 
-func (d *DeliveryPerson) Update(mainvehicleid uint, birthday time.Time, personalid string) error {
-	if mainvehicleid != 0 {
-		d.MainVehicleId = mainvehicleid
-	}
+func (d *DeliveryPerson) Update(birthday time.Time, personalid string) error {
 	if !birthday.IsZero() {
 		d.Birthday = birthday
 	}
@@ -52,12 +47,9 @@ func (d *DeliveryPerson) Update(mainvehicleid uint, birthday time.Time, personal
 }
 
 func (d *DeliveryPerson) UpdateCurrentLocation(location Location) error {
-	if !location.Timestamp.IsZero() {
-		d.CurrentLocation = location
-		return nil
-	}
+	d.CurrentLocation = location
 
-	return ErrInvalidLocation
+	return nil
 }
 
 func (d *DeliveryPerson) UpdateStatus(status string) error {

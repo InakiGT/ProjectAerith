@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 
+	"rapi-pedidos/src/internal/delivery_person/infrastructure/persistence"
 	"rapi-pedidos/src/internal/vehicle/domain"
 
 	"gorm.io/gorm"
@@ -13,8 +14,13 @@ type GormRepository struct {
 }
 
 type Vehicle struct {
-	Id uint `gorm:"primaryKey;autoIncrement;column:id"`
-	domain.Vehicle
+	gorm.Model
+	DeliveryPersonId uint
+	Color            string
+	Type             string
+	Plate            string
+	CardID           string
+	DeliveryPerson   persistence.DeliveryPerson `gorm:"foreignKey:DeliveryPersonId"`
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {
@@ -22,7 +28,8 @@ func NewGormRepository(db *gorm.DB) *GormRepository {
 }
 
 func (r *GormRepository) Save(ctx context.Context, vehicle *domain.Vehicle) error {
-	err := r.db.WithContext(ctx).Create(&Vehicle{Vehicle: *vehicle}).Error
+	gormVehicle := FromDomainTransformer(vehicle)
+	err := r.db.WithContext(ctx).Create(gormVehicle).Error
 
 	return err
 }
@@ -35,9 +42,9 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.Vehicle, error)
 	}
 
 	var result []*domain.Vehicle
-	for _, vehicle := range vehicles {
-		result = append(result, &vehicle.Vehicle)
-		result[len(result)-1].Id = vehicle.Id
+	for _, gormVehicle := range vehicles {
+		vehicle := FromPersistenceTransformer(gormVehicle)
+		result = append(result, vehicle)
 	}
 
 	return result, nil
@@ -50,8 +57,7 @@ func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.Vehic
 		return nil, err
 	}
 
-	result := &vehicle.Vehicle
-	result.Id = vehicle.Id
+	result := FromPersistenceTransformer(vehicle)
 
 	return result, nil
 }
@@ -63,8 +69,7 @@ func (r *GormRepository) FindByPlate(ctx context.Context, plate string) (*domain
 		return nil, err
 	}
 
-	result := &vehicle.Vehicle
-	result.Id = vehicle.Id
+	result := FromPersistenceTransformer(vehicle)
 
 	return result, nil
 }
@@ -76,8 +81,7 @@ func (r *GormRepository) FindByCardID(ctx context.Context, cardid string) (*doma
 		return nil, err
 	}
 
-	result := &vehicle.Vehicle
-	result.Id = vehicle.Id
+	result := FromPersistenceTransformer(vehicle)
 
 	return result, nil
 }
@@ -90,7 +94,7 @@ func (r *GormRepository) Update(ctx context.Context, vehicle *domain.Vehicle) er
 		return err
 	}
 
-	vehicleToUpdate.Vehicle = *vehicle
+	vehicleToUpdate = *FromDomainTransformer(vehicle)
 	return r.db.WithContext(ctx).Save(&vehicleToUpdate).Error
 }
 

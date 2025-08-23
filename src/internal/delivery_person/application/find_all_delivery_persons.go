@@ -16,6 +16,6 @@ func NewFindAllDeliveryPersons(deliveryPersonRepo domain.Repository) *FindAllDel
 	}
 }
 
-func (cmd *FindAllDeliveryPersonCommand) Execute(ctx context.Context) (*[]domain.DeliveryPerson, error) {
+func (cmd *FindAllDeliveryPersonCommand) Execute(ctx context.Context) ([]*domain.DeliveryPerson, error) {
 	return cmd.deliveryPersonRepo.FindAll(ctx)
 }

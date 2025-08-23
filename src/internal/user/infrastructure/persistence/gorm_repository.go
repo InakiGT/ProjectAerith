@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+
 	"rapi-pedidos/src/internal/user/domain"
 
 	"gorm.io/gorm"
@@ -12,8 +13,10 @@ type GormRepository struct {
 }
 
 type User struct {
-	Id uint `gorm:"primaryKey;column:id"`
-	domain.User
+	gorm.Model
+	Name     string
+	Email    string `gorm:"unique;not null"`
+	Password string
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {
@@ -21,7 +24,8 @@ func NewGormRepository(db *gorm.DB) *GormRepository {
 }
 
 func (r *GormRepository) Save(ctx context.Context, user *domain.User) error {
-	err := r.db.WithContext(ctx).Create(&User{User: *user}).Error
+	gormUser := FromDomainTransformer(user)
+	err := r.db.WithContext(ctx).Create(gormUser).Error
 
 	return err
 }
@@ -29,15 +33,14 @@ func (r *GormRepository) Save(ctx context.Context, user *domain.User) error {
 func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
 	var users []*User
 	err := r.db.WithContext(ctx).Find(&users).Error
-
 	if err != nil {
 		return nil, err
 	}
 
 	var result []*domain.User
-	for _, user := range users {
-		result = append(result, &user.User)
-		result[len(result)-1].Id = user.Id
+	for _, gormUser := range users {
+		user := FromPersistenceTransformer(gormUser)
+		result = append(result, user)
 	}
 
 	return result, nil
@@ -46,14 +49,11 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
 func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.User, error) {
 	var user *User
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error
-
 	if err != nil {
 		return nil, err
 	}
 
-	var result *domain.User
-	result = &user.User
-	result.Id = user.Id
+	result := FromPersistenceTransformer(user)
 
 	return result, nil
 }
@@ -61,14 +61,11 @@ func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.User,
 func (r *GormRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 	var user *User
 	err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
-
 	if err != nil {
 		return nil, err
 	}
 
-	var result *domain.User
-	result = &user.User
-	result.Id = user.Id
+	result := FromPersistenceTransformer(user)
 
 	return result, nil
 }
@@ -81,7 +78,7 @@ func (r *GormRepository) Update(ctx context.Context, user *domain.User) error {
 		return err
 	}
 
-	userToUpdate.User = *user
+	userToUpdate = *FromDomainTransformer(user)
 	return r.db.WithContext(ctx).Save(&userToUpdate).Error
 }
 

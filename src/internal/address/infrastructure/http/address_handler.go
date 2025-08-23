@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+
 	"rapi-pedidos/src/internal/address/application"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,7 @@ func (h *AddresHandler) CreateAddress(ctx *gin.Context) {
 		Number     string `json:"number" binding:"required"`
 		PostalCode string `json:"postal_code" binding:"required"`
 		Cologne    string `json:"cologne" binding:"required"`
+		UserID     uint   `json:"user_id" binding:"required"`
 	}
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -46,7 +48,7 @@ func (h *AddresHandler) CreateAddress(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := h.createAddress.Execute(ctx, input.City, input.Country, input.Number, input.Street, input.PostalCode, input.Cologne); err != nil {
+	if _, err := h.createAddress.Execute(ctx, input.City, input.Country, input.Number, input.Street, input.PostalCode, input.Cologne, input.UserID); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,7 +69,6 @@ func (h *AddresHandler) FindAllAddresses(ctx *gin.Context) {
 func (h *AddresHandler) FindAddresByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	address, err := h.findAddressByID.Execute(ctx, id)
-
 	if err != nil {
 		if err.Error() == "record not found" {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

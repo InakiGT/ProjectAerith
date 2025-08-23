@@ -16,6 +16,6 @@ func NewFindDeliveryPersonByLocation(deliveryPersonRepo domain.Repository) *Find
 	}
 }
 
-func (cmd *FindDeliveryPersonByLocationCommand) Execute(ctx context.Context, location domain.Location) (*[]domain.DeliveryPerson, error) {
+func (cmd *FindDeliveryPersonByLocationCommand) Execute(ctx context.Context, location domain.Location) ([]*domain.DeliveryPerson, error) {
 	return cmd.deliveryPersonRepo.FindByLocation(ctx, location)
 }

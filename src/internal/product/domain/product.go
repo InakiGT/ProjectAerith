@@ -2,23 +2,33 @@ package domain
 
 type Product struct {
 	Id          uint
+	CommerceId  uint
 	Name        string
 	Price       float32
 	Description string
+	Img         string
 }
 
-func NewProduct(name, description string, price float32) (*Product, error) {
+func NewProduct(name, description, img string, price float32, commerceid uint) (*Product, error) {
 	if name == "" {
 		return nil, ErrInvalidName
 	}
 	if description == "" {
 		return nil, ErrInvalidDescription
 	}
+	if img == "" {
+		return nil, ErrInvalidImg
+	}
+	if commerceid == 0 {
+		return nil, ErrInvalidCommerceID
+	}
 
 	return &Product{
 		Name:        name,
 		Price:       price,
 		Description: description,
+		Img:         img,
+		CommerceId:  commerceid,
 	}, nil
 }
 

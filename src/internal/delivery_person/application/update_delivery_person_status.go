@@ -30,7 +30,7 @@ func (cmd *UpdateDeliveryPersonStatusCommand) Execute(ctx context.Context, id, s
 		return nil, err
 	}
 
-	if err = cmd.deliveryPersonRepo.UpdateStatus(ctx, id, status); err != nil {
+	if err = cmd.deliveryPersonRepo.Update(ctx, deliveryPerson); err != nil {
 		return nil, err
 	}
 

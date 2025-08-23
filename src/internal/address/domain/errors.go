@@ -9,4 +9,5 @@ var (
 	ErrInvalidPostalCode = errors.New("código postal inválido")
 	ErrInvalidCologne    = errors.New("colonia inválida")
 	ErrInvalidNumber     = errors.New("número inválido")
+	ErrInvalidUserID     = errors.New("usuario (UserID) inválido")
 )

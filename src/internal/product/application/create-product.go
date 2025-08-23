@@ -17,12 +17,12 @@ func NewCreateProduct(productRepo domain.Repository) *CreateProductCommand {
 	}
 }
 
-func (cpc *CreateProductCommand) Execute(ctx context.Context, name, description string, price float32) (*domain.Product, error) {
+func (cpc *CreateProductCommand) Execute(ctx context.Context, name, description, img string, price float32, commerceid uint) (*domain.Product, error) {
 	if name == "" || description == "" {
 		return nil, errors.New("nombre y descripción del producto son requeridos")
 	}
 
-	product, err := domain.NewProduct(name, description, price)
+	product, err := domain.NewProduct(name, description, img, price, commerceid)
 	if err != nil {
 		return nil, err
 	}

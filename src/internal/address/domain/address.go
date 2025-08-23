@@ -2,6 +2,7 @@ package domain
 
 type Address struct {
 	Id         uint
+	UserId     uint
 	City       string
 	Country    string
 	Number     string
@@ -10,8 +11,7 @@ type Address struct {
 	Cologne    string
 }
 
-func NewAddress(city, country, number, street, postalCode, cologne string) (*Address, error) {
-
+func NewAddress(city, country, number, street, postalCode, cologne string, userid uint) (*Address, error) {
 	if city == "" {
 		return nil, ErrInvalidCity
 	}
@@ -29,6 +29,9 @@ func NewAddress(city, country, number, street, postalCode, cologne string) (*Add
 	}
 	if cologne == "" {
 		return nil, ErrInvalidCologne
+	}
+	if userid == 0 {
+		return nil, ErrInvalidUserID
 	}
 
 	return &Address{

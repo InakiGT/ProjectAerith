@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"time"
 
 	"rapi-pedidos/src/internal/delivery_person/domain"
 
@@ -13,9 +14,13 @@ type GormRepository struct {
 }
 
 type DeliveryPerson struct {
-	Id uint `gorm:"primaryKey;autoIncrement;column:id"`
-	domain.DeliveryPerson
 	gorm.Model
+	UserId          uint
+	MainVehicleId   uint
+	Birthday        time.Time
+	CurrentLocation domain.Location `gorm:"type:point"`
+	Status          string
+	PersonalID      string `gorm:"unique;not null"`
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {
@@ -25,7 +30,8 @@ func NewGormRepository(db *gorm.DB) *GormRepository {
 }
 
 func (r *GormRepository) Save(ctx context.Context, deliveryperson *domain.DeliveryPerson) error {
-	err := r.db.WithContext(ctx).Save(&DeliveryPerson{DeliveryPerson: *deliveryperson}).Error
+	gormDeliveryPerson := FromDomainTransformer(deliveryperson)
+	err := r.db.WithContext(ctx).Save(gormDeliveryPerson).Error
 
 	return err
 }
@@ -38,9 +44,9 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.DeliveryPerson,
 	}
 
 	var result []*domain.DeliveryPerson
-	for _, deliveryPerson := range deliveryPersons {
-		result = append(result, &deliveryPerson.DeliveryPerson)
-		result[len(result)-1].Id = deliveryPerson.Id
+	for _, gormDeliveryPerson := range deliveryPersons {
+		deliveryPerson := FromPersistenceTransformer(gormDeliveryPerson)
+		result = append(result, deliveryPerson)
 	}
 
 	return result, nil
@@ -53,8 +59,7 @@ func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.Deliv
 		return nil, err
 	}
 
-	result := &deliveryPerson.DeliveryPerson
-	result.Id = deliveryPerson.Id
+	result := FromPersistenceTransformer(deliveryPerson)
 
 	return result, nil
 }
@@ -64,17 +69,7 @@ func (r *GormRepository) FindByLocation(ctx context.Context, location domain.Loc
 	radiusKm := 10
 
 	query := `
-		SELECT *,
-		(
-			6371 * acos(
-				cos(radians(?)) * cos(radians(latitude)) *
-				cos(radians(longitude) - radians(?)) +
-				sin(radians(?)) * sin(radians(latitude))
-			)
-		) AS distance
-		FROM delivery_people
-		HAVING distance < ?
-		ORDER BY distance;
+		SELECT * FROM delivery_persons;
 	`
 
 	err := r.db.WithContext(ctx).
@@ -87,9 +82,9 @@ func (r *GormRepository) FindByLocation(ctx context.Context, location domain.Loc
 	}
 
 	var result []*domain.DeliveryPerson
-	for _, dp := range deliveryPersons {
-		result = append(result, &dp.DeliveryPerson)
-		result[len(result)-1].Id = dp.Id
+	for _, gormDeliveryPerson := range deliveryPersons {
+		deliveryPreson := FromPersistenceTransformer(gormDeliveryPerson)
+		result = append(result, deliveryPreson)
 	}
 
 	return result, nil
@@ -102,8 +97,7 @@ func (r *GormRepository) FindByPersonalID(ctx context.Context, personalID string
 		return nil, err
 	}
 
-	result := &deliveryPerson.DeliveryPerson
-	result.Id = deliveryPerson.Id
+	result := FromPersistenceTransformer(deliveryPerson)
 
 	return result, nil
 }
@@ -120,18 +114,6 @@ func (r *GormRepository) UpdateCurrentLocation(ctx context.Context, id string, l
 	return r.db.WithContext(ctx).Save(&deliveryPersonToUpdate).Error
 }
 
-func (r *GormRepository) UpdateStatus(ctx context.Context, id string, status string) error {
-	var deliveryPersonToUpdate DeliveryPerson
-
-	err := r.db.WithContext(ctx).Where("id = ?", id).First(&deliveryPersonToUpdate).Error
-	if err != nil {
-		return err
-	}
-
-	deliveryPersonToUpdate.Status = status
-	return r.db.WithContext(ctx).Save(&deliveryPersonToUpdate).Error
-}
-
 func (r *GormRepository) Update(ctx context.Context, deliveryPerson *domain.DeliveryPerson) error {
 	var deliveryPersonToUpdate DeliveryPerson
 
@@ -140,7 +122,7 @@ func (r *GormRepository) Update(ctx context.Context, deliveryPerson *domain.Deli
 		return err
 	}
 
-	deliveryPersonToUpdate.DeliveryPerson = *deliveryPerson
+	deliveryPersonToUpdate = *FromDomainTransformer(deliveryPerson)
 	return r.db.WithContext(ctx).Save(&deliveryPersonToUpdate).Error
 }
 

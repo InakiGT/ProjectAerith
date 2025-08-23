@@ -18,7 +18,7 @@ func NewUpdateDeliveryPerson(deliveryPersonRepo domain.Repository) *UpdateDelive
 	}
 }
 
-func (cmd *UpdateDeliveryPersonCommand) Execute(ctx context.Context, id, personalid string, birthday time.Time, mainvehicle uint) (*domain.DeliveryPerson, error) {
+func (cmd *UpdateDeliveryPersonCommand) Execute(ctx context.Context, id, personalid string, birthday time.Time) (*domain.DeliveryPerson, error) {
 	deliveryPerson, err := cmd.deliveryPersonRepo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (cmd *UpdateDeliveryPersonCommand) Execute(ctx context.Context, id, persona
 		return nil, errors.New("no existe el repartidor a actualizar")
 	}
 
-	if err = deliveryPerson.Update(mainvehicle, birthday, personalid); err != nil {
+	if err = deliveryPerson.Update(birthday, personalid); err != nil {
 		return nil, err
 	}
 

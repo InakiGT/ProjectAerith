@@ -13,8 +13,14 @@ type GormRepository struct {
 }
 
 type Product struct {
-	Id uint `gorm:"primaryKey;autoIncrement;column:id"`
-	domain.Product
+	gorm.Model
+	CommerceId  uint ``
+	Name        string
+	Price       float32
+	Description string
+	Img         string
+	// TODO:
+	// Commerce Commerce
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {
@@ -22,7 +28,8 @@ func NewGormRepository(db *gorm.DB) *GormRepository {
 }
 
 func (r *GormRepository) Save(ctx context.Context, product *domain.Product) error {
-	err := r.db.WithContext(ctx).Create(&Product{Product: *product}).Error
+	gormProduct := FromDomainTransformer(product)
+	err := r.db.WithContext(ctx).Create(gormProduct).Error
 
 	return err
 }
@@ -35,9 +42,9 @@ func (r *GormRepository) FindAll(ctx context.Context) ([]*domain.Product, error)
 	}
 
 	var result []*domain.Product
-	for _, product := range products {
-		result = append(result, &product.Product)
-		result[len(result)-1].Id = product.Id
+	for _, gormProduct := range products {
+		product := FromPersistenceTransformer(gormProduct)
+		result = append(result, product)
 	}
 
 	return result, nil
@@ -50,8 +57,7 @@ func (r *GormRepository) FindByID(ctx context.Context, id string) (*domain.Produ
 		return nil, err
 	}
 
-	result := &product.Product
-	result.Id = product.Id
+	result := FromPersistenceTransformer(product)
 
 	return result, nil
 }
@@ -64,7 +70,7 @@ func (r *GormRepository) Update(ctx context.Context, product *domain.Product) er
 		return err
 	}
 
-	productToUpdate.Product = *product
+	productToUpdate = *FromDomainTransformer(product)
 	return r.db.WithContext(ctx).Save(&productToUpdate).Error
 }
 
