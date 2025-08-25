@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AddresHandler struct {
+type AddressHandler struct {
 	createAddress    application.CreateAddressCommand
 	findAllAddresses application.FindAllAddressesCommand
 	findAddressByID  application.FindAddresByIdCommand
@@ -22,8 +22,8 @@ func NewAddressHandler(
 	findAddressByID application.FindAddresByIdCommand,
 	updateAddress application.UpadteAddressCommand,
 	deleteAddress application.DeleteAddressCommand,
-) *AddresHandler {
-	return &AddresHandler{
+) *AddressHandler {
+	return &AddressHandler{
 		createAddress:    createAddress,
 		findAllAddresses: findAllAddresses,
 		findAddressByID:  findAddressByID,
@@ -32,7 +32,7 @@ func NewAddressHandler(
 	}
 }
 
-func (h *AddresHandler) CreateAddress(ctx *gin.Context) {
+func (h *AddressHandler) CreateAddress(ctx *gin.Context) {
 	var input struct {
 		Street     string `json:"street" binding:"required"`
 		City       string `json:"city" binding:"required"`
@@ -56,7 +56,7 @@ func (h *AddresHandler) CreateAddress(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"status": "address created"})
 }
 
-func (h *AddresHandler) FindAllAddresses(ctx *gin.Context) {
+func (h *AddressHandler) FindAllAddresses(ctx *gin.Context) {
 	addresses, err := h.findAllAddresses.Execute(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -66,7 +66,7 @@ func (h *AddresHandler) FindAllAddresses(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, addresses)
 }
 
-func (h *AddresHandler) FindAddresByID(ctx *gin.Context) {
+func (h *AddressHandler) FindAddresByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	address, err := h.findAddressByID.Execute(ctx, id)
 	if err != nil {
@@ -81,7 +81,7 @@ func (h *AddresHandler) FindAddresByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, address)
 }
 
-func (h *AddresHandler) UpdateAddress(ctx *gin.Context) {
+func (h *AddressHandler) UpdateAddress(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var input struct {
 		Street     string `json:"street"`
@@ -106,7 +106,7 @@ func (h *AddresHandler) UpdateAddress(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, nil)
 }
 
-func (h *AddresHandler) DeleteAddress(ctx *gin.Context) {
+func (h *AddressHandler) DeleteAddress(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	if err := h.deleteAddress.Execute(ctx, id); err != nil {
