@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 
+	"rapi-pedidos/src/internal/client/infrastructure/persistence"
 	"rapi-pedidos/src/internal/client_card/domain"
 
 	"gorm.io/gorm"
@@ -15,15 +16,14 @@ type GormRepository struct {
 // Structura específica para GORM, requiere un transformer
 type ClientCard struct {
 	gorm.Model
-	ClietdId          uint
+	ClientID          uint
 	Provider          string
 	ExpYear           string
 	ExpMonth          string
 	Last4             string
 	Brand             string
 	ServiceCustomerId string
-	// TODO: Aquí se define la relación real en GORM, User es el struct de la capa de infraestructura
-	// User User
+	Client            persistence.Client `gorm:"foreignKey:ClientID;references:ID"`
 }
 
 func NewGormRepository(db *gorm.DB) *GormRepository {

@@ -4,7 +4,7 @@ import "rapi-pedidos/src/internal/client_card/domain"
 
 func FromDomainTransformer(d *domain.ClientCard) *ClientCard {
 	return &ClientCard{
-		ClietdId:          d.ClientId,
+		ClientID:          d.ClientId,
 		Provider:          d.Provider,
 		ExpYear:           d.ExpYear,
 		ExpMonth:          d.ExpMonth,
@@ -17,7 +17,7 @@ func FromDomainTransformer(d *domain.ClientCard) *ClientCard {
 func FromPersistenceTransformer(p *ClientCard) *domain.ClientCard {
 	return &domain.ClientCard{
 		Id:                p.ID,
-		ClientId:          p.ClietdId,
+		ClientId:          p.ClientID,
 		Provider:          p.Provider,
 		ExpYear:           p.ExpYear,
 		ExpMonth:          p.ExpMonth,
