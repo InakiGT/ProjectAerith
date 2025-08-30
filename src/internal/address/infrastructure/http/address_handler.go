@@ -66,7 +66,7 @@ func (h *AddressHandler) FindAllAddresses(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, addresses)
 }
 
-func (h *AddressHandler) FindAddresByID(ctx *gin.Context) {
+func (h *AddressHandler) FindAddressByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	address, err := h.findAddressByID.Execute(ctx, id)
 	if err != nil {

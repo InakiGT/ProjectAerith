@@ -8,6 +8,8 @@ import (
 	addresspersistence "rapi-pedidos/src/internal/address/infrastructure/persistence"
 	clientpersistence "rapi-pedidos/src/internal/client/infrastructure/persistence"
 	clientcardpersistence "rapi-pedidos/src/internal/client_card/infrastructure/persistence"
+	commercepersistence "rapi-pedidos/src/internal/commerce/infrastructure/persistence"
+	commercecategorypersistence "rapi-pedidos/src/internal/commerce_category/infrastructure/persistence"
 	deliverypersonpersistence "rapi-pedidos/src/internal/delivery_person/infrastructure/persistence"
 	productpersistence "rapi-pedidos/src/internal/product/infrastructure/persistence"
 	userpersistence "rapi-pedidos/src/internal/user/infrastructure/persistence"
@@ -58,6 +60,14 @@ func NewGormConnection() *gorm.DB {
 	}
 
 	if err := db.AutoMigrate(&clientcardpersistence.ClientCard{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	if err := db.AutoMigrate(&commercecategorypersistence.CommerceCategory{}); err != nil {
+		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	if err := db.AutoMigrate(&commercepersistence.Commerce{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 

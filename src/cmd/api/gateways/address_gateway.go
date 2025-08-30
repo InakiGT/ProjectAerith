@@ -11,16 +11,16 @@ import (
 
 func AddressBindRoutes(dbConn *gorm.DB, router *gin.Engine) {
 	addressRepo := persistence.NewGormRepository(dbConn)
-	createAddress := application.NewCreateAddress(addressRepo)
-	findAllAddresses := application.NewFindAllAddresses(addressRepo)
-	findAddresByID := application.NewFindAddressById(addressRepo)
-	updateAddress := application.NewUpdateAddress(addressRepo)
-	deleteAddress := application.NewDeleteAddress(addressRepo)
-	addressHandler := http.NewAddressHandler(*createAddress, *findAllAddresses, *findAddresByID, *updateAddress, *deleteAddress)
+	create := application.NewCreateAddress(addressRepo)
+	findAll := application.NewFindAllAddresses(addressRepo)
+	findById := application.NewFindAddressById(addressRepo)
+	update := application.NewUpdateAddress(addressRepo)
+	delete := application.NewDeleteAddress(addressRepo)
+	addressHandler := http.NewAddressHandler(*create, *findAll, *findById, *update, *delete)
 
 	router.POST("/addresses", addressHandler.CreateAddress)
 	router.GET("/addresses", addressHandler.FindAllAddresses)
-	router.GET("/addresses/:id", addressHandler.FindAddresByID)
+	router.GET("/addresses/:id", addressHandler.FindAddressByID)
 	router.PUT("/addresses/:id", addressHandler.UpdateAddress)
 	router.DELETE("/addresses/:id", addressHandler.DeleteAddress)
 }
